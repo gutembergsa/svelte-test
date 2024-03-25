@@ -4,7 +4,7 @@
 </script>
 
 <div class="title">
-  <img src=´${base}/controller.svg´ alt="site logo">
+  <img src="{base}/controller.svg" alt="site logo">
   <h1>{title}</h1>
 </div>
 
