@@ -1,15 +1,17 @@
 <script>
     import Title from '$lib/title.svelte'
     import '../../styles/global.css'
+    import { base } from '$app/paths';
+
   </script>
   
   <header>
     <nav>
       <Title title="Ninja Gaming Guides" />
       <div class="links">
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/guides">Guides</a>
+        <a href="{base}/">Home</a>
+        <a href="{base}/about">About</a>
+        <a href="{base}/guides">Guides</a>
       </div>
     </nav> 
   </header>
