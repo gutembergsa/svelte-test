@@ -1,9 +1,10 @@
 <script>
-  export let title = "Ninja Gaming"
+  import { base } from '$app/paths';
+  export let title = "Gutem Gaming"
 </script>
 
 <div class="title">
-  <img src="/controller.svg" alt="site logo">
+  <img src=´${base}/controller.svg´ alt="site logo">
   <h1>{title}</h1>
 </div>
 
