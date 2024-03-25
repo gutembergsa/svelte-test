@@ -2,7 +2,7 @@ teste
 <script lang="ts">
     import Title from '$lib/title.svelte'
     import type { LayoutData } from "./$types"
-    import '../../../styles/global.css'
+    import '../../styles/global.css'
     //SSG adapter
     export const prerender = true;
 
