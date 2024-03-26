@@ -126,7 +126,7 @@
 {#if $showModal}
     <div class="modal">
     <button on:click={handleModalClose}>X</button>
-    <p>{$modalMessage}</p>
+    <p data-testid="modal-message">{$modalMessage}</p>
     </div>
 {/if}
   

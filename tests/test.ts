@@ -35,7 +35,10 @@ test('Test clicking a button and checking HTML', async ({ page, }) => {
 
 	const timer = page.getByTestId('timer');
 
-	await page.waitForTimeout(10000);
+	await page.waitForTimeout(16000);
 
-	console.log({timer: await timer.innerHTML()});
+	const modalMessage = page.getByTestId('modal-message')
+
+	expect(await timer.innerHTML()).toBe('Tempo restante: 0'); // Replace 'expectedText' with the text you expect to find in the HTML
+	expect(await modalMessage.innerHTML()).toBe('Desafio finalizado com falha!'); // Replace 'expectedText' with the text you expect to find in the HTML
   });
