@@ -4,7 +4,7 @@ test('Test clicking a button and checking HTML', async ({ page, }) => {
 	// Navigate to the page
 	await page.goto('/');
 	
-	const element =  await page.getByText('doispo')
+	const element = await page.getByTestId('challenge-button')
 
 	console.log({element});
 	

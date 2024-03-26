@@ -3,7 +3,9 @@
     import { goto, invalidateAll } from '$app/navigation';
     import { timeLeft, showModal, modalMessage, showTimer, candidate, challlengeStarted, resetTimer } from './store';
 	import { json } from '@sveltejs/kit';
-    
+    export const prerender = true;
+
+
     type Data = {
         success: boolean,
         errors: Record<string, string>
@@ -113,7 +115,7 @@
     Email:
     <input type="email" bind:value={email} name="email"/>
     </label>
-    <button on:click={handleChallengeStart} type="button">Iniciar Desafio</button>
+    <button on:click={handleChallengeStart} type="button" test-id="challenge-button">Iniciar Desafio</button>
     <button type="submit">Enviar</button>
 </form>
 
