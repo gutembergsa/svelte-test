@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { onDestroy, onMount } from 'svelte';
-    import { goto, invalidateAll } from '$app/navigation';
     import { timeLeft, showModal, modalMessage, showTimer, candidate, challlengeStarted, resetTimer } from './store';
 	import { json } from '@sveltejs/kit';
     export const prerender = true;
+    import { base } from '$app/paths';
 
 
     type Data = {
@@ -99,7 +98,7 @@
   
 
 <nav>
-    <a data-sveltekit-replacestate href="/candidates">Candidate</a>
+    <a data-sveltekit-replacestate href="{ base }/candidates">Candidate</a>
 </nav>
 
 <form on:submit|preventDefault={handleSubmit}>
