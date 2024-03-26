@@ -115,12 +115,12 @@
     Email:
     <input type="email" bind:value={email} name="email"/>
     </label>
-    <button on:click={handleChallengeStart} type="button" test-id="challenge-button">Iniciar Desafio</button>
+    <button on:click={handleChallengeStart} type="button" data-testid="challenge-button">Iniciar Desafio</button>
     <button type="submit">Enviar</button>
 </form>
 
 {#if $showTimer == true}
-    <p>Tempo restante: {$timeLeft}</p>
+    <p data-testid="timer">Tempo restante: {$timeLeft}</p>
 {/if}
 
 {#if $showModal}
