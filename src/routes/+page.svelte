@@ -32,8 +32,6 @@
   
     async function handleSubmit(event: Event) {
         showModal.set(true);
-        modalMessage.set('Desafio finalizado com sucesso!');
-        clearInterval(intervalId);
 
         const formEl = event.target as HTMLFormElement
         const formData = new FormData(formEl)
@@ -55,6 +53,9 @@
             return json(data, { status: 400 })
         }
 
+        modalMessage.set('Desafio finalizado com sucesso!');
+        clearInterval(intervalId);
+
         data.success = true
 
         candidate.set({name, phone, email})
@@ -64,7 +65,8 @@
 
     function handleChallengeStart() {
         console.log('handleChallengeStart');
-        
+        timeLeft.set(15);
+        showModal.set(false);
         showTimer.set(true)
         challlengeStarted.set(true)
         clearInterval(intervalId);
