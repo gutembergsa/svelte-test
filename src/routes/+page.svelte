@@ -1,132 +1,132 @@
 <script lang="ts">
-    import { onDestroy, onMount } from 'svelte';
-    import { goto, invalidateAll } from '$app/navigation';
-    import { timeLeft, showModal, modalMessage, showTimer, candidate, challlengeStarted, resetTimer } from './store';
-	import { json } from '@sveltejs/kit';
-    export const prerender = true;
+	import {
+		timeLeft,
+		modalMessage,
+		showTimer,
+		candidate,
+		challlengeStarted,
+		intervalId,
+		decrementCounter,
+		formFeedback,
+		helperToClearInterval
+	} from './store';
+	import { onMount } from 'svelte';
+	import Modal from '$lib/Modal.svelte';
+	import type { Data } from '$lib/types';
+	import Input from '$lib/Input.svelte';
 
+	let modalTrigger: HTMLDialogElement;
+	let [name, phone, email] = '';
 
-    type Data = {
-        success: boolean,
-        errors: Record<string, string>
-    }
+	async function handleSubmit(event: Event) {
+		const formEl = event.target as HTMLFormElement;
+		const formData = new FormData(formEl);
 
+		const [name, phone, email] = [
+			String(formData.get('name')),
+			String(formData.get('phone')),
+			String(formData.get('email'))
+		];
 
-    let name = '';
-    let phone = '';
-    let email = '';
-    let intervalId: number;
-    let form: Data
+		const data: Data = {
+			success: false,
+			errors: {}
+		};
 
-    // let countdown: number;
-    // timeLeft.subscribe(value => {
-    //     countdown = value;
-    // });
+		if (!name || !phone || !email) {
+			data.errors.fields = 'Prencha os campos obrigatórios';
+			return formFeedback.set(data);
+		}
 
-    // let timerShouldApper: boolean;
-    // showTimer.subscribe(value => {
-    //     timerShouldApper = value;
-    // });
+		modalTrigger.showModal();
+		helperToClearInterval(false);
+		modalMessage.set('Desafio finalizado com sucesso!');
 
-    // onDestroy(() => {
-    //   clearInterval(intervalId);
-    // });
-  
-    async function handleSubmit(event: Event) {
-        showModal.set(true);
+		data.success = true;
 
-        const formEl = event.target as HTMLFormElement
-        const formData = new FormData(formEl)
+		candidate.set({ name, phone, email });
+		formFeedback.set(data);
+	}
 
-        const [name, phone, email] = [
-            String(formData.get("name")), 
-            String(formData.get("phone")), 
-            String(formData.get("email"))
-        ]
-        
-        const data: Data = {
-            success: false,
-            errors: {}
-        }
+	function handleChallengeStart() {
+		helperToClearInterval(true);
+		interval();
+	}
 
+	function interval() {
+		const id = setInterval(() => {
+			if ($timeLeft > 0) {
+				decrementCounter();
+			} else {
+				helperToClearInterval(false);
+				modalTrigger.showModal();
+				modalMessage.set('Desafio finalizado com falha!');
 
-        if (!name || !phone || !email) {
-            data.errors.fields = 'required field is missing'
-            return json(data, { status: 400 })
-        }
+				const data: Data = {
+					success: false,
+					errors: {
+						form: 'Tempo excedido'
+					}
+				};
+				formFeedback.set(data);
+			}
+		}, 1000);
 
-        modalMessage.set('Desafio finalizado com sucesso!');
-        clearInterval(intervalId);
+		intervalId.set(id);
+	}
 
-        data.success = true
+	onMount(() => {
+		if ($intervalId && $timeLeft > 0) {
+			clearInterval($intervalId);
+			interval();
+		}
+	});
 
-        candidate.set({name, phone, email})
+	export const prerender = true;
+	export const ssr = false;
+</script>
 
-        return json(data, { status: 200 })
-    }
-
-    function handleChallengeStart() {
-        console.log('handleChallengeStart');
-        timeLeft.set(15);
-        showModal.set(false);
-        showTimer.set(true)
-        challlengeStarted.set(true)
-        clearInterval(intervalId);
-
-        intervalId = setInterval(() => {
-            if ($timeLeft > 0) {
-            timeLeft.update(n => n > 0 ? n - 1 : 0);
-            } else {
-                clearInterval(intervalId);
-                console.log('clearInterval');
-
-                showTimer.set(false)
-                showModal.set(true);
-                challlengeStarted.set(false)
-                modalMessage.set('Desafio finalizado com falha!');
-            }
-        }, 1000);
-    }
-  
-    function handleModalClose() {
-        resetTimer()
-        clearInterval(intervalId);
-        console.log('clearInterval');   
-    }
-    </script>
-  
-  <!-- rest of the code -->
-  
-
-<nav>
-    <a data-sveltekit-replacestate href="/candidates">Candidate</a>
+<nav class="container mx-auto flex justify-end">
+	<a class="btn" data-sveltekit-replacestate href="/candidates" data-testid="nav-to-candidates"
+		>Candidate</a
+	>
 </nav>
+<main class="container mx-auto">
+	<form
+		on:submit|preventDefault={handleSubmit}
+		data-testid="form"
+		autocomplete="off"
+		class="container mx-auto flex flex-col gap-3"
+	>
+		<Input bind:value={name} label="Nome" type="text" name="name" disabled={!$challlengeStarted} />
+		<Input
+			bind:value={phone}
+			label="Telefone"
+			type="tel"
+			name="phone"
+			disabled={!$challlengeStarted}
+		/>
+		<Input
+			bind:value={email}
+			type="email"
+			label="Email"
+			name="email"
+			disabled={!$challlengeStarted}
+		/>
+		<div class="container mx-auto flex flex-col py-4 gap-4">
+			<button
+				class="btn"
+				on:click={handleChallengeStart}
+				type="button"
+				data-testid="challenge-button">Iniciar Desafio</button
+			>
+			<button class="btn" type="submit" data-testid="send-button">Enviar</button>
+		</div>
+	</form>
 
-<form on:submit|preventDefault={handleSubmit}>
-    <label>
-    Nome:
-    <input type="text" bind:value={name} name="name"/>
-    </label>
-    <label>
-    Telefone:
-    <input type="tel" bind:value={phone} name="phone"/>
-    </label>
-    <label>
-    Email:
-    <input type="email" bind:value={email} name="email"/>
-    </label>
-    <button on:click={handleChallengeStart} type="button" data-testid="challenge-button">Iniciar Desafio</button>
-    <button type="submit">Enviar</button>
-</form>
+	{#if $showTimer == true}
+		<p data-testid="timer">Tempo restante: {$timeLeft}</p>
+	{/if}
 
-{#if $showTimer == true}
-    <p data-testid="timer">Tempo restante: {$timeLeft}</p>
-{/if}
-
-{#if $showModal}
-    <div class="modal">
-    <button on:click={handleModalClose}>X</button>
-    <p data-testid="modal-message">{$modalMessage}</p>
-    </div>
-{/if}
-  
+	<Modal on:modalTrigger={({ detail }) => (modalTrigger = detail)} />
+</main>
